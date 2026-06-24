@@ -1,0 +1,17 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: xzm-ai-code
+
+# springdoc-openapi
+springdoc:
+  group-configs:
+    - group: 'default'
+      packages-to-scan: com.xzm.aicode.controller
+# knife4j
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
