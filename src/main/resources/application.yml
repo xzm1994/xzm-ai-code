@@ -4,6 +4,23 @@ server:
 spring:
   application:
     name: xzm-ai-code
+  # mysql
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/aicode
+    username: root
+    password: root
+
+# mybatis-plus
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 日志
+logging:
+  level:
+    com.xzm.aicode.mapper: debug
 
 # springdoc-openapi
 springdoc:
