@@ -4,6 +4,8 @@ server:
 spring:
   application:
     name: xzm-ai-code
+  profiles:
+    active: local
   # mysql
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

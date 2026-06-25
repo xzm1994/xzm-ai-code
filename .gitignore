@@ -17,3 +17,7 @@ Thumbs.db
 
 # Log
 *.log
+### CUSTOM ###
+application-loacl.yml
+tmp
+
