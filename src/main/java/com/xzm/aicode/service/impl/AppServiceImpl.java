@@ -176,7 +176,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>
         boolean updateResult = this.updateById(updateApp);
         ThrowUtils.throwIf(!updateResult, ErrorCode.OPERATION_ERROR, "更新应用部署信息失败");
         // 9. 返回可访问的 URL
-        return String.format("%s/%s/", AppDeployConfig.getDeployHost(), deployKey);
+        return String.format("%s/static/%s/", AppDeployConfig.getDeployHost(), deployKey);
     }
 
 }
