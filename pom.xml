@@ -65,6 +65,13 @@
             <version>3.5.10</version>
         </dependency>
 
+        <!-- 新增：分页插件必须依赖包 -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser-4.9</artifactId>
+            <version>3.5.12</version>
+        </dependency>
+
         <!-- langchain4j -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
