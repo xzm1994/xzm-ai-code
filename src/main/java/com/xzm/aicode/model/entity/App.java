@@ -53,7 +53,7 @@ public class App {
      * 部署时间
      */
     @TableField(value = "deployedTime")
-    private Date deployedTime;
+    private LocalDateTime deployedTime;
 
     /**
      * 优先级

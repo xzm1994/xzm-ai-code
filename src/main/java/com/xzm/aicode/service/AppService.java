@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.xzm.aicode.model.dto.app.AppQueryRequest;
 import com.xzm.aicode.model.dto.app.AppVO;
 import com.xzm.aicode.model.entity.App;
+import com.xzm.aicode.model.entity.User;
+import reactor.core.publisher.Flux;
 
 import java.util.List;
 
@@ -23,4 +25,7 @@ public interface AppService extends IService<App> {
 
     List<AppVO> getAppVOList(List<App> appList);
 
+    Flux<String> chatToGenCode(Long appId, String message, User loginUser);
+
+    String deployApp(Long appId, User loginUser);
 }

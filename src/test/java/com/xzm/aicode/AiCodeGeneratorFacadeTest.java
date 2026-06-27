@@ -88,7 +88,7 @@ class AiCodeGeneratorFacadeTest {
                 "- 颜色以蓝白灰为主，状态标签使用绿色（生效中）和红色（已失效）\n" +
                 "- 卡片带小趋势箭头和百分比\n" +
                 "- 表格带斑马纹，操作按钮为文字链接\n" +
-                "- 响应式设计（适应PC屏幕）", CodeGenTypeEnum.MULTI_FILE);
+                "- 响应式设计（适应PC屏幕）", CodeGenTypeEnum.MULTI_FILE, 1L);
         Assertions.assertNotNull(file);
     }
 
@@ -163,7 +163,7 @@ class AiCodeGeneratorFacadeTest {
                 "- 颜色以蓝白灰为主，状态标签使用绿色（生效中）和红色（已失效）\n" +
                 "- 卡片带小趋势箭头和百分比\n" +
                 "- 表格带斑马纹，操作按钮为文字链接\n" +
-                "- 响应式设计（适应PC屏幕）", CodeGenTypeEnum.MULTI_FILE);
+                "- 响应式设计（适应PC屏幕）", CodeGenTypeEnum.MULTI_FILE, 1L);
         // 阻塞等待所有数据收集完成
         List<String> result = codeStream.collectList().block();
         // 验证结果
