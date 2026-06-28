@@ -17,10 +17,12 @@ import com.xzm.aicode.model.dto.app.AppQueryRequest;
 import com.xzm.aicode.model.dto.app.AppVO;
 import com.xzm.aicode.model.entity.App;
 import com.xzm.aicode.model.entity.User;
+import com.xzm.aicode.model.enums.ChatHistoryMessageTypeEnum;
 import com.xzm.aicode.model.enums.CodeGenTypeEnum;
 import com.xzm.aicode.model.vo.UserVO;
 import com.xzm.aicode.service.AppService;
 import com.xzm.aicode.mapper.AppMapper;
+import com.xzm.aicode.service.ChatHistoryService;
 import com.xzm.aicode.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -47,6 +49,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>
 
     @Resource
     private AiCodeGeneratorFacade aiCodeGeneratorFacade;
+
+    @Resource
+    private ChatHistoryService chatHistoryService;
 
     @Override
     public AppVO getAppVO(App app) {
@@ -130,7 +135,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "不支持的代码生成类型");
         }
-        // 5. 调用 AI 生成代码
+        // 5. 通过校验后，添加用户消息到对话历史
+        chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
+        // 6. 调用 AI 生成代码
         return aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
     }
 
