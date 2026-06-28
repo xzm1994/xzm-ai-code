@@ -1,7 +1,13 @@
 package com.xzm.aicode.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.xzm.aicode.model.dto.chathistory.ChatHistoryQueryRequest;
 import com.xzm.aicode.model.entity.ChatHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xzm.aicode.model.entity.User;
+
+import java.time.LocalDateTime;
 
 /**
 * @author Administrator
@@ -10,4 +16,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ChatHistoryService extends IService<ChatHistory> {
     boolean addChatMessage(Long appId, String message, String messageType, Long userId);
+
+    boolean deleteByAppId(Long appId);
+
+    QueryWrapper<ChatHistory> getQueryWrapper(ChatHistoryQueryRequest chatHistoryQueryRequest);
+
+    Page<ChatHistory> listAppChatHistoryByPage(Long appId, int pageSize,
+                                               LocalDateTime lastCreateTime,
+                                               User loginUser);
 }

@@ -9,6 +9,7 @@ import com.xzm.aicode.model.entity.App;
 import com.xzm.aicode.model.entity.User;
 import reactor.core.publisher.Flux;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -28,4 +29,13 @@ public interface AppService extends IService<App> {
     Flux<String> chatToGenCode(Long appId, String message, User loginUser);
 
     String deployApp(Long appId, User loginUser);
+
+    /**
+     * 删除应用时关联删除对话历史
+     *
+     * @param id 应用ID
+     * @return 是否成功
+     */
+    boolean removeById(Serializable id);
+
 }
