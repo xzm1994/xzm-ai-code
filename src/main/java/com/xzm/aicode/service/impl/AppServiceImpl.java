@@ -26,6 +26,7 @@ import com.xzm.aicode.service.ChatHistoryService;
 import com.xzm.aicode.service.UserService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -54,6 +55,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>
     private AiCodeGeneratorFacade aiCodeGeneratorFacade;
 
     @Resource
+    @Lazy
     private ChatHistoryService chatHistoryService;
 
     @Override
