@@ -1,6 +1,7 @@
 package com.xzm.aicode.core;
 
 import com.xzm.aicode.ai.AiCodeGeneratorService;
+import com.xzm.aicode.ai.AiCodeGeneratorServiceFactory;
 import com.xzm.aicode.ai.model.HtmlCodeResult;
 import com.xzm.aicode.ai.model.MultiFileCodeResult;
 import com.xzm.aicode.core.parser.CodeParserExecutor;
@@ -10,6 +11,7 @@ import com.xzm.aicode.exception.ErrorCode;
 import com.xzm.aicode.model.enums.CodeGenTypeEnum;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -23,7 +25,8 @@ import java.io.File;
 public class AiCodeGeneratorFacade {
 
     @Resource
-    private AiCodeGeneratorService aiCodeGeneratorService;
+    @Lazy
+    private AiCodeGeneratorServiceFactory aiCodeGeneratorServiceFactory;
 
 
     /**
@@ -37,6 +40,7 @@ public class AiCodeGeneratorFacade {
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成类型为空");
         }
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 HtmlCodeResult result = aiCodeGeneratorService.generateHtmlCode(userMessage);
@@ -63,6 +67,7 @@ public class AiCodeGeneratorFacade {
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "生成类型为空");
         }
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 Flux<String> codeStream = aiCodeGeneratorService.generateHtmlCodeStream(userMessage);

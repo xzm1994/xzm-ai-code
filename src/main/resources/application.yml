@@ -1,7 +1,14 @@
 server:
   port: 8080
+  servlet:
+    session:
+      cookie:
+        max-age: 2592000
 
 spring:
+  session:
+    store-type: redis
+    timeout: 2592000
   application:
     name: xzm-ai-code
   profiles:
@@ -18,6 +25,7 @@ spring:
       host: localhost
       port: 6379
       password:
+      ttl: 3600
 
 # mybatis-plus
 mybatis-plus:

@@ -1,6 +1,8 @@
 package com.xzm.aicode.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,10 +18,15 @@ import com.xzm.aicode.model.enums.ChatHistoryMessageTypeEnum;
 import com.xzm.aicode.service.AppService;
 import com.xzm.aicode.service.ChatHistoryService;
 import com.xzm.aicode.mapper.ChatHistoryMapper;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
 * @author Administrator
@@ -27,6 +34,7 @@ import java.time.LocalDateTime;
 * @createDate 2026-06-28 09:09:06
 */
 @Service
+@Slf4j
 public class ChatHistoryServiceImpl extends ServiceImpl<ChatHistoryMapper, ChatHistory>
     implements ChatHistoryService{
     @Resource
@@ -112,6 +120,42 @@ public class ChatHistoryServiceImpl extends ServiceImpl<ChatHistoryMapper, ChatH
         return this.page(Page.of(1, pageSize), queryWrapper);
     }
 
+    @Override
+    public int loadChatHistoryToMemory(Long appId, MessageWindowChatMemory chatMemory, int maxCount) {
+        try {
+            // 直接构造查询条件，起始点为 1 而不是 0，用于排除最新的用户消息
+            LambdaQueryWrapper<ChatHistory> queryWrapper = new LambdaQueryWrapper<ChatHistory>()
+                    .eq(ChatHistory::getAppId, appId)
+                    .orderByAsc(ChatHistory::getCreateTime)
+                    .last("LIMIT " + maxCount);
+
+            List<ChatHistory> historyList = this.list(queryWrapper);
+            if (CollUtil.isEmpty(historyList)) {
+                return 0;
+            }
+            // 反转列表，确保按时间正序（老的在前，新的在后）
+            historyList = historyList.reversed();
+            // 按时间顺序添加到记忆中
+            int loadedCount = 0;
+            // 先清理历史缓存，防止重复加载
+            chatMemory.clear();
+            for (ChatHistory history : historyList) {
+                if (ChatHistoryMessageTypeEnum.USER.getValue().equals(history.getMessageType())) {
+                    chatMemory.add(UserMessage.from(history.getMessage()));
+                    loadedCount++;
+                } else if (ChatHistoryMessageTypeEnum.AI.getValue().equals(history.getMessageType())) {
+                    chatMemory.add(AiMessage.from(history.getMessage()));
+                    loadedCount++;
+                }
+            }
+            log.info("成功为 appId: {} 加载了 {} 条历史对话", appId, loadedCount);
+            return loadedCount;
+        } catch (Exception e) {
+            log.error("加载历史对话失败，appId: {}, error: {}", appId, e.getMessage(), e);
+            // 加载失败不影响系统运行，只是没有历史上下文
+            return 0;
+        }
+    }
 
 }
 
