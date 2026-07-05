@@ -195,7 +195,6 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>
             log.info("构建Vue项目成功，部署源目录：{}", sourceDir.getAbsolutePath());
         }
 
-
         // 7. 复制文件到部署目录
         String deployDirPath = AppConstant.CODE_DEPLOY_ROOT_DIR + File.separator + deployKey;
         try {
