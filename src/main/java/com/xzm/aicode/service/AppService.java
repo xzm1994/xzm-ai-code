@@ -3,6 +3,7 @@ package com.xzm.aicode.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xzm.aicode.model.dto.app.AppAddRequest;
 import com.xzm.aicode.model.dto.app.AppQueryRequest;
 import com.xzm.aicode.model.dto.app.AppVO;
 import com.xzm.aicode.model.entity.App;
@@ -38,4 +39,6 @@ public interface AppService extends IService<App> {
      */
     boolean removeById(Serializable id);
 
+
+    Long createApp(AppAddRequest appAddRequest, User loginUser);
 }

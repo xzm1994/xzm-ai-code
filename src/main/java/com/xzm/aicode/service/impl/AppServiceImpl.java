@@ -7,6 +7,7 @@ import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.xzm.aicode.ai.AiCodeGenTypeRoutingService;
 import com.xzm.aicode.config.AppDeployConfig;
 import com.xzm.aicode.constant.AppConstant;
 import com.xzm.aicode.core.AiCodeGeneratorFacade;
@@ -15,6 +16,8 @@ import com.xzm.aicode.core.handler.StreamHandlerExecutor;
 import com.xzm.aicode.exception.BusinessException;
 import com.xzm.aicode.exception.ErrorCode;
 import com.xzm.aicode.exception.ThrowUtils;
+import com.xzm.aicode.mapper.AppMapper;
+import com.xzm.aicode.model.dto.app.AppAddRequest;
 import com.xzm.aicode.model.dto.app.AppQueryRequest;
 import com.xzm.aicode.model.dto.app.AppVO;
 import com.xzm.aicode.model.entity.App;
@@ -23,7 +26,6 @@ import com.xzm.aicode.model.enums.ChatHistoryMessageTypeEnum;
 import com.xzm.aicode.model.enums.CodeGenTypeEnum;
 import com.xzm.aicode.model.vo.UserVO;
 import com.xzm.aicode.service.AppService;
-import com.xzm.aicode.mapper.AppMapper;
 import com.xzm.aicode.service.ChatHistoryService;
 import com.xzm.aicode.service.UserService;
 import jakarta.annotation.Resource;
@@ -65,6 +67,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>
     @Autowired
     private VueProjectBuilder vueProjectBuilder;
 
+    @Resource
+    private AiCodeGenTypeRoutingService aiCodeGenTypeRoutingService;
     @Override
     public AppVO getAppVO(App app) {
         if (app == null) {
@@ -240,6 +244,27 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App>
         return super.removeById(id);
     }
 
+
+    @Override
+    public Long createApp(AppAddRequest appAddRequest, User loginUser) {
+        // 参数校验
+        String initPrompt = appAddRequest.getInitPrompt();
+        ThrowUtils.throwIf(StrUtil.isBlank(initPrompt), ErrorCode.PARAMS_ERROR, "初始化 prompt 不能为空");
+        // 构造入库对象
+        App app = new App();
+        BeanUtil.copyProperties(appAddRequest, app);
+        app.setUserId(loginUser.getId());
+        // 应用名称暂时为 initPrompt 前 12 位
+        app.setAppName(initPrompt.substring(0, Math.min(initPrompt.length(), 12)));
+        // 使用 AI 智能选择代码生成类型
+        CodeGenTypeEnum selectedCodeGenType = aiCodeGenTypeRoutingService.routeCodeGenType(initPrompt);
+        app.setCodeGenType(selectedCodeGenType.getValue());
+        // 插入数据库
+        boolean result = this.save(app);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        log.info("应用创建成功，ID: {}, 类型: {}", app.getId(), selectedCodeGenType.getValue());
+        return app.getId();
+    }
 
 
 }
